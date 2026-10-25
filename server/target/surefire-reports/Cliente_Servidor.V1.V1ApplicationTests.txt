@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: Cliente_Servidor.V1.V1ApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.598 s -- in Cliente_Servidor.V1.V1ApplicationTests

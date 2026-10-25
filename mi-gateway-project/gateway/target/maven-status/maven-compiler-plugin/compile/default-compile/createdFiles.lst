@@ -1,0 +1,5 @@
+com\miempresa\gateway\filter\ServerRoutingFilter.class
+com\miempresa\gateway\filter\CorsConfig.class
+com\miempresa\gateway\filter\LoggingFilter.class
+com\miempresa\gateway\GatewayApplication.class
+com\miempresa\gateway\controller\ServersController.class

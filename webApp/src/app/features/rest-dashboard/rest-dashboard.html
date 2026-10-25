@@ -1,0 +1,143 @@
+<main class="dashboard-shell">
+  <header class="dashboard-header">
+    <div>
+      <h1>Monitor de servicios</h1>
+    </div>
+
+    <div class="status-summary" aria-live="polite">
+      <span>Estado: {{ status() }}</span>
+      <span>Registros: {{ totalRecords() }}</span>
+    </div>
+  </header>
+
+  <section class="control-bar" aria-label="Consulta de servicios">
+    <div class="field">
+      <label for="serverSelector">Servidor</label>
+      <select
+        id="serverSelector"
+        [value]="selectedServer()?.urlGateway ?? ''"
+        (change)="onServerChange($event)"
+        [disabled]="loadingServers()"
+      >
+        @for (server of servers(); track server.urlGateway) {
+          <option [value]="server.urlGateway">{{ serverLabel(server) }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="viewSelector">Consulta</label>
+      <select id="viewSelector" [value]="selectedViewKey()" (change)="onViewChange($event)">
+        @for (view of views; track view.key) {
+          <option [value]="view.key">{{ view.label }}</option>
+        }
+      </select>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="loadSelectedView()" [disabled]="loading() || !selectedServer()">
+      Actualizar
+    </button>
+  </section>
+
+  @if (error()) {
+    <p class="alert" role="alert">{{ error() }}</p>
+  }
+
+  <section class="table-panel" [attr.aria-busy]="loading()">
+    <div class="table-title-row">
+      <h2>{{ selectedView().label }}</h2>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <caption>
+          {{ selectedView().label }}
+        </caption>
+        <thead>
+          <tr>
+            @for (column of selectedView().columns; track column.key) {
+              <th scope="col">{{ column.label }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            <tr>
+              <td class="empty-row" [attr.colspan]="selectedView().columns.length">
+                Cargando datos...
+              </td>
+            </tr>
+          } @else {
+            @for (row of paginatedRows(); track rowId(row) ?? $index) {
+              <tr>
+                @for (column of selectedView().columns; track column.key) {
+                  @if (column.key === 'imagen' && row[column.key]) {
+                    <td>
+                      <img class="table-thumbnail" [src]="row[column.key]" [alt]="'Imagen ' + row['nombre']" />
+                    </td>
+                  } @else {
+                    <td>{{ formatCell(row[column.key]) }}</td>
+                  }
+                }
+              </tr>
+            } @empty {
+              <tr>
+                <td class="empty-row" [attr.colspan]="selectedView().columns.length">
+                  No hay datos para mostrar.
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages() > 1) {
+      <nav class="pagination" aria-label="Paginacion de resultados">
+        <button type="button" (click)="prevPage()" [disabled]="currentPage() === 1">Anterior</button>
+        <span class="page-info">Pagina {{ currentPage() }} de {{ totalPages() }}</span>
+        <button type="button" (click)="nextPage()" [disabled]="currentPage() === totalPages()">Siguiente</button>
+      </nav>
+    }
+  </section>
+
+  @if (selectedViewKey() === 'resumenEmociones' && resumenExtra()) {
+    <section class="resumen-extra">
+      <div class="resumen-stats">
+        <div class="stat-card">
+          <span class="stat-label">Total de imagenes</span>
+          <span class="stat-value">{{ resumenExtra()?.totalImagenes }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Emocion mas frecuente</span>
+          <span class="stat-value">{{ resumenExtra()?.emocionMasFrecuente }}</span>
+        </div>
+      </div>
+
+      <div class="ultimas-imagenes">
+        <h3>Ultimas 5 imagenes</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Emocion</th>
+              <th>Fecha hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (img of resumenExtra()?.ultimasImagenes; track img.id) {
+              <tr>
+                <td>{{ img.id }}</td>
+                <td>{{ img.nombre }}</td>
+                <td>{{ img.emocion ?? 'Sin identificar' }}</td>
+                <td>{{ img.fechaHora }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
+</main>

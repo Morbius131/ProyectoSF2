@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      # El enrutamiento manual por servidor lo hace ServerRoutingFilter.
+      # El discovery locator queda activo como fallback para rutas normales.
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 10s
+
+# Conexión al Eureka Registry
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    # Refresca la lista de instancias cada 5 segundos
+    registry-fetch-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
+  endpoint:
+    gateway:
+      enabled: true
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.miempresa.gateway: DEBUG
+    org.springframework.cloud.gateway: INFO

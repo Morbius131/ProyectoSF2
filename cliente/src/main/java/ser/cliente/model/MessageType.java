@@ -1,0 +1,15 @@
+package ser.cliente.model;
+
+public enum MessageType {
+    CONNECTION_STATUS,
+    LIST_CLIENTS,
+    LIST_SERVERS,
+    LIST_DOCUMENTS,
+    SEND_MESSAGE,
+    SEND_FILE,
+    RECEIVE_MESSAGE,
+    RECEIVE_FILE,
+    RECEIVE_LOGS,
+    LIST_FACE_IMAGES,
+    IDENTIFY_EMOTIONS
+}
